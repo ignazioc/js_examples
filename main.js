@@ -1,121 +1,66 @@
 import { Chess } from "chess.js";
 
-loadChess();
+const piecesIcons = {
+  r: { icon: "fa-chess-rook", color: "black" },
+  n: { icon: "fa-chess-knight", color: "black" },
+  b: { icon: "fa-chess-bishop", color: "black" },
+  q: { icon: "fa-chess-queen", color: "black" },
+  k: { icon: "fa-chess-king", color: "black" },
+  p: { icon: "fa-chess-pawn", color: "black" },
+  R: { icon: "fa-chess-rook", color: "white" },
+  N: { icon: "fa-chess-knight", color: "white" },
+  B: { icon: "fa-chess-bishop", color: "white" },
+  Q: { icon: "fa-chess-queen", color: "white" },
+  K: { icon: "fa-chess-king", color: "white" },
+  P: { icon: "fa-chess-pawn", color: "white" },
+  ".": { icon: null, color: null },
+};
 
-function createPiece(name, color, asdfa) {
-  const piece = document.createElement("span");
-  piece.style.width = "50px";
-  piece.style.height = "50px";
-  piece.style.backgroundColor = color;
-  piece.style.color = asdfa
-  piece.style.display = "inline-block";
-  piece.style.textAlign = "center";
-  piece.style.fontSize = "30px";
-  piece.style.border = "1px solid black";
-  piece.style.fontWeight = "bold";
-  piece.style.lineHeight = "50px";
-  piece.textContent = name;
-  document.body.appendChild(piece);
-}
+showChessBoard();
 
-function loadChess() {
-  const asciiBoard = new Chess().ascii();
-  const ranks = asciiBoard.split("\n");
+function showChessBoard() {
+  const game = new Chess();
+  game.move("e4");
+  game.move("e5");
+  game.move("Nf3");
+  
+  const asciiGame = cleanUpChessGame(game);
 
-  const pieces = ranks.slice(1, 9);
+  console.assert(asciiGame.length === 8, "The board should have 8 rows");
 
-  pieces.forEach((rank) => {
-    console.log(rank);
-    const pieces = rank.split("");
-    let backgroundColor = "white";
-    let pieceColor = "black";
-    pieces.forEach((piece) => {
-      switch (piece) {
-        case " ":
-          break;
-        case "|":
-          break;
-        case "r":
-          createPiece("♜", backgroundColor, pieceColor);
-          var tmp = backgroundColor 
-          backgroundColor = pieceColor;
-          pieceColor = tmp;
-          break;
-        case "n":
-          createPiece("♞", backgroundColor, pieceColor);
-          tmp = backgroundColor 
-          backgroundColor = pieceColor;
-          pieceColor = tmp;
-          break;
-        case "b":
-          createPiece("♝", backgroundColor, pieceColor);
-          tmp = backgroundColor 
-          backgroundColor = pieceColor;
-          pieceColor = tmp;
-          break;
-        case "q":
-          createPiece("♛",backgroundColor, pieceColor);
-          tmp = backgroundColor 
-          backgroundColor = pieceColor;
-          pieceColor = tmp;
-          break;
-        case "k":
-          createPiece("♚",backgroundColor, pieceColor);
-          tmp = backgroundColor 
-          backgroundColor = pieceColor;
-          pieceColor = tmp;
-          break;
-        case "p":
-          createPiece("♟",backgroundColor, pieceColor);
-          tmp = backgroundColor 
-          backgroundColor = pieceColor;
-          pieceColor = tmp;
-          break;
-        case ".":
-          createPiece(".",backgroundColor, pieceColor);
-          tmp = backgroundColor 
-          backgroundColor = pieceColor;
-          pieceColor = tmp;
-          break;
-        case "R":
-          createPiece("♜",backgroundColor, pieceColor);
-          tmp = backgroundColor 
-          backgroundColor = pieceColor;
-          pieceColor = tmp;
-          break;
-        case "N":
-          createPiece("♞",backgroundColor, pieceColor);
-          tmp = backgroundColor 
-          backgroundColor = pieceColor;
-          pieceColor = tmp;
-          break;
-        case "B":
-          createPiece("♝",backgroundColor, pieceColor);
-          tmp = backgroundColor 
-          backgroundColor = pieceColor;
-          pieceColor = tmp;
-          break;
-        case "Q":
-          createPiece("♛",backgroundColor, pieceColor);
-          tmp = backgroundColor 
-          backgroundColor = pieceColor;
-          pieceColor = tmp;
-          break;
-        case "K":
-          createPiece("♚",backgroundColor, pieceColor);
-          tmp = backgroundColor 
-          backgroundColor = pieceColor;
-          pieceColor = tmp;
-          break;
-        case "P":
-          createPiece("♟",backgroundColor, pieceColor);
-          tmp = backgroundColor 
-          backgroundColor = pieceColor;
-          pieceColor = tmp;
-          break;
-      }
+  asciiGame.forEach((row, i) => {
+    row.forEach((squareChar, j) => {
+      const backgroundColor = (i + j) % 2 === 0 ? "light" : "dark";
+      const pieceIcon = piecesIcons[squareChar]["icon"];
+      const pieceColor = piecesIcons[squareChar]["color"];
+      const squareSpan = createSquare(backgroundColor);
+      const pieceSpan = createPiece(pieceIcon, pieceColor);
+
+      squareSpan.appendChild(pieceSpan);
+      document.body.appendChild(squareSpan);
     });
     const br = document.createElement("br");
     document.body.appendChild(br);
   });
+}
+
+function createSquare(backgroundColor) {
+  const square = document.createElement("span");
+  square.className = `square square-${backgroundColor}`;
+  return square;
+}
+
+function createPiece(name, pieceColor) {
+  const icon = document.createElement("span");
+  icon.className = `fa-solid ${name}`;
+  icon.style.color = pieceColor;
+  return icon;
+}
+
+function cleanUpChessGame(game) {
+  return game
+    .ascii()
+    .split("\n")
+    .slice(1, 9)
+    .map((file) => file.split("").filter((char) => char in piecesIcons));
 }
